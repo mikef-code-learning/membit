@@ -1,0 +1,15 @@
+/* comment */
+body {
+    background-color: #424242;
+}
+
+ /* label focus color */
+.input-field input[type=text]:focus + label {
+    color: #e0e0e0;
+}
+/* label underline focus color */
+.input-field input[type=text]:focus {
+    color: #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+    box-shadow: 0 1px 0 0 #BDBDBD;
+}
