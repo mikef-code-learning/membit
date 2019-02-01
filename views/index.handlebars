@@ -1,16 +1,16 @@
 <div class="navbar-fixed">
     <nav>
-        <div class="nav-wrapper black">
-        <a href="#!" class="brand-logo">Membit</a>
-        <ul class="right">
-            <li>
-                <div class="input-field">
-                    <i class="tiny material-icons prefix">account_circle</i>
-                    <input id="usernameText" class="gray lighten-2" type="text">
-                    <label for="usernameText">Username</label>
-                </div>
-            </li>
-        </ul>
+        <div class="nav-wrapper">
+            <a href="#!" class="brand-logo">Membit</a>
+            <ul class="right">
+                <li>
+                    <div class="input-field">
+                        <i class="tiny material-icons prefix">account_circle</i>
+                        <input id="usernameText" class="gray lighten-2" type="text">
+                        <label for="usernameText">Username</label>
+                    </div>
+                </li>
+            </ul>
         </div>
     </nav>
 </div>
@@ -18,19 +18,33 @@
 <div class="container">
     <div class="row">
     </div>
-    <div class="row">
-        <div class="input-field">
-            <i class="tiny material-icons prefix">search</i>
-            <input id="search" type="text">
-            <label for="search">Search</label>
+    <div class="col s12 m6">
+        <div class="card">
+            <div class="card-content white-text">
+                <div class="row">
+                    <div class="input-field">
+                        <i class="tiny material-icons prefix">search</i>
+                        <input id="search" type="text">
+                        <label id="input-label" for="search">Search</label>
+                    </div>
+                </div>
+                <div class="row" id="searchResults">
+                    <div id="searchResultsTable"></div>
+                </div>
+            </div>
         </div>
     </div>
-    <div class="row" id="searchResults">
-        <div id="searchResultsTable"></div>
-    </div>
-    <div id="collectionName">
-        <p><h4><span class="username"></span>'s Collection</h4></p>
-    </div>
-    <div id="collection">
+</div>
+<div class="container">
+    <div class="card">
+        <div class="card-content white-text">
+            <div id="collectionName">
+                <p>
+                    <h4><span class="username"></span>'s Collection</h4>
+                </p>
+            </div>
+            <div id="collection">
+            </div>
+        </div>
     </div>
 </div>
