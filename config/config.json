@@ -1,7 +1,7 @@
 {
   "development": {
     "username": "root",
-    "password": "princess20",
+    "password": null,
     "database": "gametestdb",
     "host": "127.0.0.1",
     "port": 3306,
