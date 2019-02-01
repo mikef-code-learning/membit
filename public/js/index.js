@@ -9,7 +9,6 @@ $(document).ready(function() {
     gameSearch();
     $('#searchResults').hide();
     $('#collectionName').hide();
-    removeFromCollection();
 });
 
 // On clicking the Submit button, this will run the API route for user login/creation.  Returned object will be used to populate #username, as well as store the userId global variable for later use.
@@ -80,16 +79,19 @@ function gameSearch() {
                     resultsTableRow.append(resultsTableNameDisplay);
                     let resultsTablePlatformsDisplay = $('<td>');
                     let currentResultsPlatformLength;
+                    // Check to see if any platforms are returned by the Giant Bomb API.  If not, this value is null, which breaks our for loop below.  I assign a value of 0 to ensure the table generator doesn't break.
                     if (currentResults.platforms === null) {
                         currentResultsPlatformLength = 0;
                     } else {
                         currentResultsPlatformLength = currentResults.platforms.length;
                     };
                     console.log("Result "+i+" platforms.length is "+currentResultsPlatformLength);
+                    // Loop through the platforms result to display them in the table.
                     for (let j = 0; j < currentResultsPlatformLength; j++) {
                         let platformLoop = currentResults.platforms[j].abbreviation;
                         resultsTablePlatformsDisplay.append(platformLoop);
                         resultsTablePlatformsDisplay.attr("data-platforms"+i+j, platformLoop);
+                        // This is to ensure we don't end up with an extra / on the end of our list of displayed platforms, and puts spacing in between the platforms listed by our loop.
                         if (j < (currentResults.platforms.length - 1)) {
                             resultsTablePlatformsDisplay.append(" / ");
                         }
@@ -260,27 +262,34 @@ function showCollection() {
                     resultsTableRow.append(resultsTableButtonDisplay);
                 });
         };
+        removeFromCollection();
     });
 };
 
+// Removes the association between a user and a game from the 'usergame' join table upon clicking the 'remove from collection' button.  Also utilizes jQuery to clear the row from the collection table in real time.
 function removeFromCollection() {
-    $(".removeFromCollection").on("click", function() {
+    // Use a delegated selector for the 'remove from collection' button, since these elements do not exist on page load initially.
+    $("#collection").on("click", ".removeFromCollection", function() {
+        event.preventDefault();
         console.log("----------------");
         console.log("Fired off collection removal event.")
         let gameId = $(this).attr("data-gameId");
-        console.log("Game ID is"+gameId);
-        console.log("User ID is"+userId);
+        console.log("Game ID is "+gameId);
+        console.log("User ID is "+userId);
+        // Removes the table row for the game being removed from collection.
+        $(this).parents("tr").remove();
+        // Backend API call to remove the association from the 'usergame' join table.
         $.ajax('/api/collection/'+userId+'/remove/'+gameId)
             .then(function(response){
                 console.log("Response to ajax query is:");
                 console.log(response);
                 if (response == 1){
                     console.log('Item removed from collection!');
-                    console.log('This is:');
-                    console.log(this);
                 } else {
                     console.log('Failed to remove item from collection.');
                 }
             });
     });
 };
+
+// Notes:  The "table generation" code has been utilized three times in this app, each with very slight variations in attribute names being assigned and other tiny differences.  This could probably be cleaned up into a single function to make this code more readable/follow DRY, but we ran out of time before project was due.  You will also notice a number of data attributes assigned to different elements that we do not currently utilize in our code - these were added to facilitate future planned functionality of the app.
