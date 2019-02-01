@@ -1,5 +1,6 @@
 let userId;
 let gameId;
+let collectionLength = 0;
 // Prompt the user for their username upon page load.
 $(document).ready(function() {
     // Initialize Materialize modal
@@ -131,6 +132,58 @@ function addToCollection() {
                         console.log("Add to collection response is:");
                         console.log(response);
                         $("#searchResultsTable").empty();
+                        collectionLength++;
+                        $.ajax('/api/gamelookup/'+guid)
+                            .then(function(response) {
+                                let currentResults = response.results;
+                                let resultsTableRow = $('<tr>');
+                                resultsTableRow.attr('id', "collectionRow"+collectionLength);
+                                $('#collectionTable').append(resultsTableRow);
+                                let resultsTableBoxartDisplay = $('<td>');
+                                let resultsTableBoxart = $('<img>');
+                                resultsTableBoxart.attr('src', currentResults.image.icon_url);
+                                resultsTableBoxart.attr("data-boxart"+collectionLength, currentResults.image.icon_url);
+                                resultsTableBoxartDisplay.append(resultsTableBoxart);
+                                resultsTableRow.append(resultsTableBoxartDisplay);
+                                let resultsTableNameDisplay = $('<td>');
+                                let resultsTableName = currentResults.name;
+                                // Store the Title of the game for use in collection add
+                                resultsTableNameDisplay.attr("data-name"+collectionLength, currentResults.name);
+                                resultsTableNameDisplay.attr("id", "collectionGameNameResult"+collectionLength);
+                                resultsTableNameDisplay.append(resultsTableName);
+                                resultsTableRow.append(resultsTableNameDisplay);
+                                let resultsTablePlatformsDisplay = $('<td>');
+                                let currentResultsPlatformLength;
+                                if (currentResults.platforms === null) {
+                                    currentResultsPlatformLength = 0;
+                                } else {
+                                    currentResultsPlatformLength = currentResults.platforms.length;
+                                };
+                                console.log("Result "+collectionLength+" platforms.length is "+currentResultsPlatformLength);
+                                for (let j = 0; j < currentResultsPlatformLength; j++) {
+                                    let platformLoop = currentResults.platforms[j].abbreviation;
+                                    resultsTablePlatformsDisplay.append(platformLoop);
+                                    resultsTablePlatformsDisplay.attr("data-platforms"+collectionLength+j, platformLoop);
+                                    if (j < (currentResults.platforms.length - 1)) {
+                                        resultsTablePlatformsDisplay.append(" / ");
+                                    }
+                                }
+                                resultsTableRow.append(resultsTablePlatformsDisplay);
+                                let resultsTableButtonDisplay = $('<td>');
+                                let resultsTableButton = $('<a>');
+                                resultsTableButton.addClass("btn-floating btn-small waves-effect waves-light grey darken-1 removeFromCollection");
+                                resultsTableButton.attr("data-guid", currentResults.guid);
+                                resultsTableButton.attr("data-resultId", collectionLength);
+                                let resultsTableButtonIcon = $('<i>');
+                                resultsTableButtonIcon.addClass("material-icons")
+                                resultsTableButtonIcon.append("delete_forever")
+                                resultsTableButton.append(resultsTableButtonIcon);
+                                resultsTableButtonDisplay.append(resultsTableButton);
+                                resultsTableRow.append(resultsTableButtonDisplay);
+                                $('html, body').animate({
+                                    scrollTop: $("#collectionRow"+collectionLength).offset().top
+                                }, 1000);
+                            });
                     });
             });
     });
@@ -143,11 +196,13 @@ function showCollection() {
         let resultsTableMain = $('<table>');
         resultsTableMain.addClass('highlight centered responsive-table');
         let resultsTableBody = $('<tbody>');
+        resultsTableBody.attr('id', 'collectionTable');
         resultsTableDiv.append(resultsTableMain);
         resultsTableMain.append(resultsTableBody);
         console.log("collection object result is ");
         console.log(collection);
         console.log("---------------");
+        collectionLength = collection.collection.length;
         for (let i = 0; i < collection.collection.length; i++) {
             console.log("Guid extracted from collection object is: "+collection.collection[i].guid);
             $.ajax('/api/gamelookup/'+collection.collection[i].guid)
@@ -155,6 +210,7 @@ function showCollection() {
                     console.log(response);
                     let currentResults = response.results;
                     let resultsTableRow = $('<tr>');
+                    resultsTableRow.attr('id', "collectionRow"+i);
                     resultsTableBody.append(resultsTableRow);
                     let resultsTableBoxartDisplay = $('<td>');
                     let resultsTableBoxart = $('<img>');
