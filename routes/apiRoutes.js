@@ -87,5 +87,19 @@ module.exports = function(app) {
             .then(function(response) {
                 res.json(response.data);
             })
-    })
+    });
+
+    // Route for deleting a row in the 'usergame' table when someone wants to remove an item from their collection.
+    app.get('/api/collection/:userId/remove/:gameId', function(req, res) {
+        let userId = req.params.userId;
+        let gameId = req.params.gameId;
+        db.User.findById(userId).then(function(user){
+            db.Game.findById(gameId).then(function(game){
+                user.removeGame(game).then(function(dbGame) {
+                    res.json(dbGame);
+                    console.log(dbGame);
+                });
+            });
+        });
+    });
 };

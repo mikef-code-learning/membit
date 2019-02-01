@@ -9,6 +9,7 @@ $(document).ready(function() {
     gameSearch();
     $('#searchResults').hide();
     $('#collectionName').hide();
+    removeFromCollection();
 });
 
 // On clicking the Submit button, this will run the API route for user login/creation.  Returned object will be used to populate #username, as well as store the userId global variable for later use.
@@ -128,9 +129,9 @@ function addToCollection() {
                 let gameId = response[0].id
                 console.log("Ajax query to local API complete.  gameId is: "+gameId);
                 $.ajax('/api/collection/'+userId+'/add/'+gameId)
-                    .then(function(response) {
+                    .then(function(collection) {
                         console.log("Add to collection response is:");
-                        console.log(response);
+                        console.log(collection);
                         $("#searchResultsTable").empty();
                         collectionLength++;
                         $.ajax('/api/gamelookup/'+guid)
@@ -174,6 +175,8 @@ function addToCollection() {
                                 resultsTableButton.addClass("btn-floating btn-small waves-effect waves-light grey darken-1 removeFromCollection");
                                 resultsTableButton.attr("data-guid", currentResults.guid);
                                 resultsTableButton.attr("data-resultId", collectionLength);
+                                console.log("Internal DB Game id is "+collection.id);
+                                resultsTableButton.attr("data-gameId", collection.id);
                                 let resultsTableButtonIcon = $('<i>');
                                 resultsTableButtonIcon.addClass("material-icons")
                                 resultsTableButtonIcon.append("delete_forever")
@@ -247,6 +250,8 @@ function showCollection() {
                     resultsTableButton.addClass("btn-floating btn-small waves-effect waves-light grey darken-1 removeFromCollection");
                     resultsTableButton.attr("data-guid", currentResults.guid);
                     resultsTableButton.attr("data-resultId", i);
+                    console.log("Internal DB Game id is "+collection.collection[i].id);
+                    resultsTableButton.attr("data-gameId", collection.collection[i].id);
                     let resultsTableButtonIcon = $('<i>');
                     resultsTableButtonIcon.addClass("material-icons")
                     resultsTableButtonIcon.append("delete_forever")
@@ -255,5 +260,27 @@ function showCollection() {
                     resultsTableRow.append(resultsTableButtonDisplay);
                 });
         };
+    });
+};
+
+function removeFromCollection() {
+    $(".removeFromCollection").on("click", function() {
+        console.log("----------------");
+        console.log("Fired off collection removal event.")
+        let gameId = $(this).attr("data-gameId");
+        console.log("Game ID is"+gameId);
+        console.log("User ID is"+userId);
+        $.ajax('/api/collection/'+userId+'/remove/'+gameId)
+            .then(function(response){
+                console.log("Response to ajax query is:");
+                console.log(response);
+                if (response == 1){
+                    console.log('Item removed from collection!');
+                    console.log('This is:');
+                    console.log(this);
+                } else {
+                    console.log('Failed to remove item from collection.');
+                }
+            });
     });
 };
